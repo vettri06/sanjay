@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section bg-success text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold">Revolutionizing Agriculture with Smart Technology</h1>
+                <p class="lead">Leveraging IoT, AI, and Cloud Computing to enhance productivity, optimize resources, and ensure sustainable farming practices for developing economies.</p>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg mt-3">
+                    <i class="fas fa-chart-line me-2"></i>View Dashboard
+                </a>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                     alt="Smart Agriculture" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-temperature-high fa-3x text-success mb-3"></i>
+                    <h4>Real-time Monitoring</h4>
+                    <p>Monitor soil moisture, temperature, humidity, and other critical parameters in real-time using IoT sensors.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-brain fa-3x text-success mb-3"></i>
+                    <h4>AI-Powered Insights</h4>
+                    <p>Get intelligent crop recommendations and predictive analytics using machine learning algorithms.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-cloud fa-3x text-success mb-3"></i>
+                    <h4>Cloud Integration</h4>
+                    <p>Store and process agricultural data securely in the cloud for scalable analytics and insights.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="mb-4">Addressing Agricultural Challenges</h2>
+                <p class="lead mb-4">Our platform helps farmers in developing economies overcome challenges like:</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled text-start">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Population pressure on food production</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Climate change impacts</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Resource depletion</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled text-start">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Inefficient water usage</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Poor crop yield predictions</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Limited access to technology</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

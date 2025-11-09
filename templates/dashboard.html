@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-tachometer-alt me-2"></i>Farm Dashboard</h2>
+        </div>
+    </div>
+
+    <!-- Sensor Readings -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ readings.get('soil_moisture', {}).get('value', 'N/A') }}%</h4>
+                            <p class="card-text">Soil Moisture</p>
+                        </div>
+                        <i class="fas fa-tint fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ readings.get('temperature', {}).get('value', 'N/A') }}°C</h4>
+                            <p class="card-text">Temperature</p>
+                        </div>
+                        <i class="fas fa-thermometer-half fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ readings.get('humidity', {}).get('value', 'N/A') }}%</h4>
+                            <p class="card-text">Humidity</p>
+                        </div>
+                        <i class="fas fa-cloud fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ readings.get('ph_level', {}).get('value', 'N/A') }}</h4>
+                            <p class="card-text">pH Level</p>
+                        </div>
+                        <i class="fas fa-flask fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weather and Analytics -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-cloud-sun me-2"></i>Weather Conditions</h5>
+                </div>
+                <div class="card-body">
+                    {% if weather %}
+                    <div class="row">
+                        <div class="col-6">
+                            <p><strong>Temperature:</strong> {{ weather['temperature'] }}°C</p>
+                            <p><strong>Humidity:</strong> {{ weather['humidity'] }}%</p>
+                        </div>
+                        <div class="col-6">
+                            <p><strong>Rainfall:</strong> {{ weather['rainfall'] }} mm</p>
+                            <p><strong>Wind Speed:</strong> {{ weather['wind_speed'] }} km/h</p>
+                        </div>
+                    </div>
+                    <small class="text-muted">Last updated: {{ weather['timestamp'] }}</small>
+                    {% else %}
+                    <p class="text-muted">No weather data available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-chart-bar me-2"></i>Average Sensor Readings</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="sensorChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts and Recommendations -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Alerts & Recommendations</h5>
+                </div>
+                <div class="card-body">
+                    {% if readings.get('soil_moisture', {}).get('value', 0) < 30 %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-tint me-2"></i>Low soil moisture detected. Consider irrigation.
+                    </div>
+                    {% endif %}
+                    
+                    {% if readings.get('temperature', {}).get('value', 0) > 32 %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-thermometer-full me-2"></i>High temperature alert. Monitor crop stress.
+                    </div>
+                    {% endif %}
+                    
+                    {% if readings.get('ph_level', {}).get('value', 7) < 6 or readings.get('ph_level', {}).get('value', 7) > 7.5 %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-flask me-2"></i>Soil pH outside optimal range. Consider soil treatment.
+                    </div>
+                    {% endif %}
+                    
+                    <div class="alert alert-success">
+                        <i class="fas fa-seedling me-2"></i>All other parameters are within normal ranges.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('sensorChart').getContext('2d');
+    const sensorChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Soil Moisture', 'Temperature', 'Humidity', 'pH Level'],
+            datasets: [{
+                label: 'Average Values',
+                data: [
+                    {{ stats.get('soil_moisture', 0) }},
+                    {{ stats.get('temperature', 0) }},
+                    {{ stats.get('humidity', 0) }},
+                    {{ stats.get('ph_level', 0) }}
+                ],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-chart-line me-2"></i>Advanced Analytics</h2>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Comprehensive Sensor Analytics</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="comprehensiveChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Key Metrics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>Data Collection</h6>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-success" style="width: 95%">95%</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Prediction Accuracy</h6>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-info" style="width: 88%">88%</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6>System Uptime</h6>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-primary" style="width: 99%">99%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Yield Prediction</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="yieldChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Resource Optimization</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="resourceChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Weather Pattern Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="weatherChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Comprehensive sensor chart
+    const compCtx = document.getElementById('comprehensiveChart').getContext('2d');
+    new Chart(compCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Soil Moisture',
+                data: [65, 59, 80, 81, 56, 72],
+                borderColor: 'rgb(54, 162, 235)',
+                fill: false
+            }, {
+                label: 'Temperature',
+                data: [28, 30, 32, 35, 33, 31],
+                borderColor: 'rgb(255, 99, 132)',
+                fill: false
+            }, {
+                label: 'Humidity',
+                data: [75, 70, 65, 60, 68, 72],
+                borderColor: 'rgb(75, 192, 192)',
+                fill: false
+            }]
+        }
+    });
+
+    // Yield prediction chart
+    const yieldCtx = document.getElementById('yieldChart').getContext('2d');
+    new Chart(yieldCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Rice', 'Wheat', 'Maize', 'Cotton', 'Sugarcane'],
+            datasets: [{
+                label: 'Predicted Yield (tons/ha)',
+                data: [4.5, 3.2, 5.1, 2.8, 7.2],
+                backgroundColor: 'rgba(40, 167, 69, 0.8)'
+            }]
+        }
+    });
+
+    // Resource optimization chart
+    const resourceCtx = document.getElementById('resourceChart').getContext('2d');
+    new Chart(resourceCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Water Saved', 'Fertilizer Optimized', 'Energy Efficient'],
+            datasets: [{
+                data: [35, 25, 40],
+                backgroundColor: [
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)'
+                ]
+            }]
+        }
+    });
+
+    // Weather pattern chart
+    const weatherCtx = document.getElementById('weatherChart').getContext('2d');
+    new Chart(weatherCtx, {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 24}, (_, i) => i + ':00'),
+            datasets: [{
+                label: 'Temperature (°C)',
+                data: [22, 21, 20, 19, 18, 17, 16, 17, 20, 24, 28, 31, 33, 34, 33, 32, 30, 28, 26, 24, 23, 22, 21, 20],
+                borderColor: 'rgb(255, 99, 132)',
+                fill: false
+            }, {
+                label: 'Humidity (%)',
+                data: [85, 87, 88, 90, 92, 93, 94, 92, 85, 75, 65, 55, 50, 45, 48, 52, 58, 65, 72, 78, 82, 84, 85, 86],
+                borderColor: 'rgb(54, 162, 235)',
+                fill: false,
+                yAxisID: 'y1'
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: {
+                        drawOnChartArea: false,
+                    },
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

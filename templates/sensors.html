@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-microchip me-2"></i>IoT Sensor Data</h2>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Real-time Sensor Readings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Sensor Type</th>
+                                    <th>Value</th>
+                                    <th>Timestamp</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in sensor_data %}
+                                <tr>
+                                    <td>
+                                        {% if data['sensor_type'] == 'soil_moisture' %}
+                                            <i class="fas fa-tint me-2"></i>Soil Moisture
+                                        {% elif data['sensor_type'] == 'temperature' %}
+                                            <i class="fas fa-thermometer-half me-2"></i>Temperature
+                                        {% elif data['sensor_type'] == 'humidity' %}
+                                            <i class="fas fa-cloud me-2"></i>Humidity
+                                        {% else %}
+                                            <i class="fas fa-flask me-2"></i>pH Level
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <strong>{{ data['value'] }}</strong>
+                                        {% if data['sensor_type'] == 'soil_moisture' %}%
+                                        {% elif data['sensor_type'] == 'temperature' %}°C
+                                        {% elif data['sensor_type'] == 'humidity' %}%
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ data['timestamp'] }}</td>
+                                    <td>
+                                        {% if data['sensor_type'] == 'soil_moisture' and data['value'] < 30 %}
+                                            <span class="badge bg-warning">Low</span>
+                                        {% elif data['sensor_type'] == 'temperature' and data['value'] > 32 %}
+                                            <span class="badge bg-danger">High</span>
+                                        {% elif data['sensor_type'] == 'ph_level' and (data['value'] < 6 or data['value'] > 7.5) %}
+                                            <span class="badge bg-info">Check</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Normal</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Soil Moisture Trend</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="moistureChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Temperature & Humidity</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="tempHumidityChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fetch sensor data and create charts
+    fetch('/api/sensor_data?type=soil_moisture&limit=10')
+        .then(response => response.json())
+        .then(data => {
+            const moistureCtx = document.getElementById('moistureChart').getContext('2d');
+            new Chart(moistureCtx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => new Date(d.timestamp).toLocaleTimeString()),
+                    datasets: [{
+                        label: 'Soil Moisture (%)',
+                        data: data.map(d => d.value),
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1
+                    }]
+                }
+            });
+        });
+
+    fetch('/api/sensor_data?type=temperature&limit=10')
+        .then(response => response.json())
+        .then(tempData => {
+            fetch('/api/sensor_data?type=humidity&limit=10')
+                .then(response => response.json())
+                .then(humidityData => {
+                    const tempHumidityCtx = document.getElementById('tempHumidityChart').getContext('2d');
+                    new Chart(tempHumidityCtx, {
+                        type: 'line',
+                        data: {
+                            labels: tempData.map(d => new Date(d.timestamp).toLocaleTimeString()),
+                            datasets: [
+                                {
+                                    label: 'Temperature (°C)',
+                                    data: tempData.map(d => d.value),
+                                    borderColor: 'rgb(255, 99, 132)',
+                                    yAxisID: 'y'
+                                },
+                                {
+                                    label: 'Humidity (%)',
+                                    data: humidityData.map(d => d.value),
+                                    borderColor: 'rgb(75, 192, 192)',
+                                    yAxisID: 'y1'
+                                }
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'left',
+                                },
+                                y1: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'right',
+                                    grid: {
+                                        drawOnChartArea: false,
+                                    },
+                                }
+                            }
+                        }
+                    });
+                });
+        });
+});
+</script>
+{% endblock %}
